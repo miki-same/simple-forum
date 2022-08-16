@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <link href="https://fonts.googleapis.com/earlyaccess/mplus1p.css" rel="stylesheet" type="text/css">
+  <title>{{ThreadName}}({{NumberOfPosts}})</title>
+</head>
+<body>
+  <div class="container">
+    <h3>{{ThreadName}}</h3>
+    <h5>作成日時: {{CreatedAt}}</h5>
+    {% for post in thread_posts %}
+      <h6>{{post['PostedAt']}}</h6>
+      <p>投稿内容</p>
+    {% endfor %}
+    <form action="{{url_for("show_thread",thread_id=ThreadId)}}" method="post">
+      <div>
+        投稿内容
+        <input type="text" name="message">
+      </div>
+      <input type="submit" value="投稿">
+    </form>
+  </div>
+</body>
+</html>
