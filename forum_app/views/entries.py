@@ -12,6 +12,16 @@ def main():
   #appフォルダ/templatesから自動読み込み
   return render_template('index.html',threads=threads)
 
+@app.route('/new', methods=['GET', 'POST'])
+def create_new_thread():
+  if request.method=='GET':
+    return render_template('new.html')
+  elif request.method=='POST':
+    title=request.form['title']
+    created_at=time.time()
+    user_name=request.form['user_name']
+    message=request.form['message']
+
 @app.route('/<int:thread_id>', methods=['GET','POST'])
 def show_thread(thread_id):
   if request.method=='GET':

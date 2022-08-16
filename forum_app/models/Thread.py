@@ -17,6 +17,11 @@ def get_item(id):
   )
   return response['Item']
 
+def post_item(item):
+  thread_table.put_item(item)
+  return 
+
+
 def get_all_threads():
   response=thread_table.scan()
 
