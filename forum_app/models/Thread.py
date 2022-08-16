@@ -16,3 +16,8 @@ def get_item(id):
     }
   )
   return response['Item']
+
+def get_all_threads():
+  response=thread_table.scan()
+
+  return response['Items']

@@ -1,58 +1,44 @@
-from tokenize import Number
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Flask, request, redirect, url_for, render_template, flash
 from forum_app import app
 
 from forum_app.models import Thread
 from forum_app.models import Post
 
+import time
+
 @app.route('/')
 def main():
-  #ダミーのスレッド情報
-  threads=[
-    {
-      'name':'Flask総合スレ',
-      'number_of_responses':150,
-      'thread_id':1
-    },
-    {
-      'name':'Webアプリ相談スレ',
-      'number_of_responses':70,
-      'thread_id':2
-    },
-  ]
+  threads=Thread.get_all_threads()
   #appフォルダ/templatesから自動読み込み
   return render_template('index.html',threads=threads)
 
 @app.route('/<int:thread_id>', methods=['GET','POST'])
 def show_thread(thread_id):
   if request.method=='GET':
-    #TODO:スレッド表示機能を作成
-
+    #スレッドを取得
     thread_response=Thread.get_item(thread_id)
+    #スレッド内の投稿を取得
     thread_posts=Post.get_all_posts_in_thread(thread_id)
-    ThreadName=thread_response['ThreadName']
-    NumberOfPosts=int(thread_response['NumberOfPosts'])
-    CreatedAt=int(thread_response['CreatedAt'])
-    ThreadId=thread_id
+    title=thread_response['title']
+    number_of_posts=int(thread_response['number_of_posts'])
+    created_at=int(thread_response['created_at'])
     for post in thread_posts:
-      post['ThreadId']=int(post['ThreadId'])
-      post['PostedAt']=int(post['PostedAt'])
-    return render_template('thread.html',ThreadId=ThreadId,ThreadName=ThreadName,NumberOfPosts=NumberOfPosts,CreatedAt=CreatedAt, thread_posts=thread_posts)
-    '''
-    #ダミーのスレッド内容
-    responses=[{
-    'name':'tarou',
-    'item':'こんにちは',
-    },
-    {'name':'jirou',
-    'item':'こんばんは',
-    },
-    ]
-    return 'スレッド番号{}'.format(thread_id)
-    '''
+      post['thread_id']=int(post['thread_id'])
+      post['posted_at']=int(post['posted_at'])
+    return render_template('thread.html',thread_id=thread_id,title=title,number_of_posts=number_of_posts,created_at=created_at, thread_posts=thread_posts)
+
   elif request.method=='POST':
     #TODO:スレッドへの投稿機能を作成
-    print(request.form['message'])
+    name=request.form['name']
+    message=request.form['message']
+    item={
+      "thread_id":thread_id,
+      "posted_at":time.time(),
+      "user_name":name,
+      "message":message
+    }
+    Post.put_post(item)
+    flash('投稿が完了しました')
     return redirect('/{}'.format(thread_id))
 
 @app.route('/<int:thread_id>/delete', methods=['POST'])
