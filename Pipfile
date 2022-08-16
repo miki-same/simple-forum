@@ -9,6 +9,7 @@ jinja2 = "==3.0.3"
 itsdangerous = "==2.0.1"
 werkzeug = "==0.15.6"
 boto3 = "*"
+pynamodb = "*"
 
 [dev-packages]
 

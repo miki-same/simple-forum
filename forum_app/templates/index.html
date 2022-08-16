@@ -13,7 +13,7 @@
   <div class="container">
     <h3>掲示板へようこそ！</h3>
     {% for thread in threads %}
-    <a href="{{url_for('thread', thread_id=thread['thread_id'])}}">{{thread['name']}}({{thread['number_of_responses']}})</a>
+    <a href="{{url_for('show_thread', thread_id=thread['thread_id'])}}">{{thread['name']}}({{thread['number_of_responses']}})</a>
     <br>
     {% endfor %}
   </div>
