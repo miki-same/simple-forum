@@ -13,7 +13,14 @@ import random
 @app.route('/')
 def main():
   threads=Thread.get_all_threads()
+  params=request.args
+  sort_param=int(params.get("sort")) if params.get("sort")!=None else None
+  if sort_param==1 or sort_param==None:
+    threads.sort(key=lambda x:x['created_at'],reverse=True)
+  elif sort_param==2:
+    threads.sort(key=lambda x:x['number_of_posts'],reverse=True)
   #appフォルダ/templatesから自動読み込み
+  print(threads)
   return render_template('index.html',threads=threads)
 
 @app.route('/new', methods=['GET', 'POST'])
