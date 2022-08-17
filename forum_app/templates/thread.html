@@ -8,22 +8,29 @@
 {% endfor %}
 
 
-<h3>{{thread_name}}</h3>
+<h3>{{title}}</h3>
 <h5>作成日時: {{created_at}}</h5>
-{% for post in thread_posts %}
-  <h5>{{post['user_name']}}</h5>
-  <p>{{post['message']}}</p>
-{% endfor %}
+<ul class="list-group list-group-flush">
+  {% for post in thread_posts %}
+  <li class="list-group-item">
+    <h5>{{post['user_name']}}</h5>
+    <br>
+    <p style="white-space:pre-wrap;">{{post['message']}}</p>
+  
+  {% endfor %}
+</ul>
 <form action="{{url_for("show_thread",thread_id=thread_id)}}" method="post">
-  <div>
+  <div class="form-group">
     名前
-    <input type="text" name="name">
+    <input type="text" name="name" class="form-control">
   </div>
-  <div>
+  <div class="form-group">
     投稿内容
-    <textarea name="message" cols="30" rows="5"></textarea>
+    <textarea name="message" cols="30" rows="5" class="form-control"></textarea>
   </div>
-  <input type="submit" value="投稿">
+  <div class="form-group">
+    <input type="submit" value="投稿" class="form-control">
+  </div>
 </form>
 
 {% endblock %}

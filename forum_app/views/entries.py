@@ -7,6 +7,7 @@ from forum_app.models import Post
 from forum_app.models import Counter
 
 import time
+import datetime
 
 @app.route('/')
 def main():
@@ -53,10 +54,11 @@ def show_thread(thread_id):
     title=thread_response['title']
     number_of_posts=int(thread_response['number_of_posts'])
     created_at=int(thread_response['created_at'])
+    created_at_jst=datetime.datetime.fromtimestamp(created_at, datetime.timezone(datetime.timedelta(hours=9)))
     for post in thread_posts:
       post['thread_id']=int(post['thread_id'])
       post['posted_at']=int(post['posted_at'])
-    return render_template('thread.html',thread_id=thread_id,title=title,number_of_posts=number_of_posts,created_at=created_at, thread_posts=thread_posts)
+    return render_template('thread.html',thread_id=thread_id,title=title,number_of_posts=number_of_posts,created_at=created_at_jst, thread_posts=thread_posts)
 
   elif request.method=='POST':
     #TODO:スレッドへの投稿機能を作成

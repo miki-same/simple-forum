@@ -3,19 +3,21 @@
 
 <h3>新規スレッド作成</h3>
 <form action="{{url_for("create_new_thread")}}" method="post">
-  <div>
+  <div class="form-group">
     タイトル
-    <input type="text" name="title">
+    <input type="text" name="title" class="form-control">
   </div>
-  <div>
+  <div class="form-group">
     名前
-    <input type="text" name="user_name">
+    <input type="text" name="user_name" class="form-control">
   </div>
-  <div>
+  <div class="form-group">
     本文
-    <textarea name="message" cols="30" rows="5"></textarea>
+    <textarea name="message" cols="30" rows="5" class="form-control"></textarea>
   </div>
-  <input type="submit" value="スレッドを作成">
+  <div class="form-group">
+    <input type="submit" value="スレッドを作成" class="form-control">
+  </div>
 </form>
 
 {% endblock %}
