@@ -1,3 +1,4 @@
+from turtle import pos
 from flask import Flask, request, redirect, url_for, render_template, flash
 from forum_app import app
 from decimal import Decimal
@@ -97,6 +98,28 @@ def show_thread(thread_id):
 def delete_thread(thread_id):
   #TODO:スレッドの削除機能を実装
   return redirect('/')
+
+@app.route('/<int:thread_id>/<int:post_id>', methods=['GET'])
+def show_post(thread_id,post_id):
+  post_response=Post.get_post(thread_id,post_id)
+  thread_response=Thread.get_thread(thread_id)
+  print(post_response)
+  if post_response!=None:
+    post=post_response
+    title=thread_response['title']
+    number_of_posts=int(thread_response['number_of_posts'])
+    created_at=float(thread_response['created_at'])
+    created_at_jst=datetime.datetime.fromtimestamp(created_at, datetime.timezone(datetime.timedelta(hours=9))).strftime('%Y-%m-%d %H:%M:%S')
+
+    post['thread_id']=int(post['thread_id'])
+    post['posted_at']=float(post['posted_at'])
+    post['posted_at_jst']=datetime.datetime.fromtimestamp(post['posted_at'],datetime.timezone(datetime.timedelta(hours=9))).strftime('%Y-%m-%d %H:%M:%S')
+
+    return render_template('thread.html',thread_id=thread_id,title=title,number_of_posts=number_of_posts,created_at=created_at_jst, thread_posts=[post])
+  else:
+    flash('存在しないレス番号です')
+    return redirect(url_for('show_thread',thread_id=thread_id))
+
 
 @app.route('/<int:thread_id>/<int:item_id>/delete', methods=['POST'])
 def delete_item(thread_id,item_id):

@@ -20,7 +20,7 @@ def get_post(thread_id,post_id):
       'post_id':post_id
     }
   )
-  return response['Item']
+  return response.get('Item')
 
 def put_post(item):
   #floatをDecimalに変換
