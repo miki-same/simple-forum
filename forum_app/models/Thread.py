@@ -1,4 +1,5 @@
 import boto3
+from decimal import Decimal
 
 dynamodb=boto3.resource(
   'dynamodb',
@@ -9,7 +10,7 @@ dynamodb=boto3.resource(
 
 thread_table=dynamodb.Table("Thread")
 
-def get_item(id):
+def get_thread(id):
   response=thread_table.get_item(
     Key={
       'id':id
@@ -17,9 +18,10 @@ def get_item(id):
   )
   return response['Item']
 
-def post_item(item):
-  thread_table.put_item(item)
-  return 
+def put_thread(item):
+  item['created_at']=Decimal(item['created_at'])
+  thread_table.put_item(Item=item)
+  return
 
 
 def get_all_threads():

@@ -1,8 +1,10 @@
 from flask import Flask, request, redirect, url_for, render_template, flash
 from forum_app import app
+from decimal import Decimal
 
 from forum_app.models import Thread
 from forum_app.models import Post
+from forum_app.models import Counter
 
 import time
 
@@ -21,12 +23,31 @@ def create_new_thread():
     created_at=time.time()
     user_name=request.form['user_name']
     message=request.form['message']
+    id=Counter.get_next_id('Thread')
+    
+    item_thread={
+      'id':id,
+      'title':title,
+      'created_at':created_at,
+      'number_of_posts':0
+    }
+    Thread.put_thread(item_thread)
+    
+    item_post={
+      'thread_id':id,
+      'posted_at':created_at,
+      'user_name':user_name,
+      'message':message
+    }
+    Post.put_post(item_post)
+
+  return redirect('/{}'.format(id))
 
 @app.route('/<int:thread_id>', methods=['GET','POST'])
 def show_thread(thread_id):
   if request.method=='GET':
     #スレッドを取得
-    thread_response=Thread.get_item(thread_id)
+    thread_response=Thread.get_thread(thread_id)
     #スレッド内の投稿を取得
     thread_posts=Post.get_all_posts_in_thread(thread_id)
     title=thread_response['title']

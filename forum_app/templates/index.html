@@ -1,22 +1,10 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-  <link href="https://fonts.googleapis.com/earlyaccess/mplus1p.css" rel="stylesheet" type="text/css">
-  <title>読書掲示板</title>
-</head>
-<body>
-  <div class="container">
-    <h3>掲示板へようこそ！</h3>
-    {% for thread in threads %}
-    <a href="{{url_for('show_thread', thread_id=thread['id'])}}">{{thread['title']}}({{thread['number_of_posts']}})</a>
-    <br>
-    {% endfor %}
-  </div>
+{% extends "layout.html" %}
+{% block body %}
 
-</body>
-</html>
+<h3>掲示板へようこそ！</h3>
+  {% for thread in threads %}
+  <a href="{{url_for('show_thread', thread_id=thread['id'])}}">{{thread['title']}}({{thread['number_of_posts']}})</a>
+  <br>
+  {% endfor %}
+
+{% endblock %}

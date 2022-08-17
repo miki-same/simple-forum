@@ -1,41 +1,29 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-  <link href="https://fonts.googleapis.com/earlyaccess/mplus1p.css" rel="stylesheet" type="text/css">
-  <title>{{title}}({{number_of_posts}})</title>
-</head>
-<body>
-  <div class="container">
+{% extends "layout.html" %}
+{% block body %}
 
-    {% for message in get_flashed_messages() %}
-    <div class="alert alert-info" role="alert">
-      {{ message }}
-    </div>
-    {% endfor %}
+{% for message in get_flashed_messages() %}
+<div class="alert alert-info" role="alert">
+  {{ message }}
+</div>
+{% endfor %}
 
 
-    <h3>{{thread_name}}</h3>
-    <h5>作成日時: {{created_at}}</h5>
-    {% for post in thread_posts %}
-      <h5>{{post['user_name']}}</h5>
-      <p>{{post['message']}}</p>
-    {% endfor %}
-    <form action="{{url_for("show_thread",thread_id=thread_id)}}" method="post">
-      <div>
-        名前
-        <input type="text" name="name">
-      </div>
-      <div>
-        投稿内容
-        <input type="text" name="message">
-      </div>
-      <input type="submit" value="投稿">
-    </form>
+<h3>{{thread_name}}</h3>
+<h5>作成日時: {{created_at}}</h5>
+{% for post in thread_posts %}
+  <h5>{{post['user_name']}}</h5>
+  <p>{{post['message']}}</p>
+{% endfor %}
+<form action="{{url_for("show_thread",thread_id=thread_id)}}" method="post">
+  <div>
+    名前
+    <input type="text" name="name">
   </div>
-</body>
-</html>
+  <div>
+    投稿内容
+    <textarea name="message" cols="30" rows="5"></textarea>
+  </div>
+  <input type="submit" value="投稿">
+</form>
+
+{% endblock %}
