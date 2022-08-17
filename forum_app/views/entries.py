@@ -9,6 +9,7 @@ from forum_app.models import Counter
 import time
 import datetime
 import random
+import re
 
 @app.route('/')
 def main():
@@ -20,7 +21,7 @@ def main():
   elif sort_param==2:
     threads.sort(key=lambda x:x['number_of_posts'],reverse=True)
   #appフォルダ/templatesから自動読み込み
-  print(threads)
+
   return render_template('index.html',threads=threads)
 
 @app.route('/new', methods=['GET', 'POST'])
@@ -44,6 +45,7 @@ def create_new_thread():
     
     item_post={
       'thread_id':id,
+      'post_id':1,
       'posted_at':created_at,
       'user_name':user_name,
       'message':message
@@ -63,8 +65,7 @@ def show_thread(thread_id):
     number_of_posts=int(thread_response['number_of_posts'])
     created_at=float(thread_response['created_at'])
     created_at_jst=datetime.datetime.fromtimestamp(created_at, datetime.timezone(datetime.timedelta(hours=9))).strftime('%Y-%m-%d %H:%M:%S')
-    for i, post in enumerate(thread_posts):
-      post['post_number']=i+1
+    for post in thread_posts:
       post['thread_id']=int(post['thread_id'])
       post['posted_at']=float(post['posted_at'])
       post['posted_at_jst']=datetime.datetime.fromtimestamp(post['posted_at'],datetime.timezone(datetime.timedelta(hours=9))).strftime('%Y-%m-%d %H:%M:%S')
@@ -74,8 +75,16 @@ def show_thread(thread_id):
     #TODO:スレッドへの投稿機能を作成
     name=request.form['name']
     message=request.form['message']
+    post_id=int(Thread.get_thread(id=thread_id)['number_of_posts']+1)
+
+    #正規表現でURLをハイパーリンクに置き換える
+    #直接リンクではなくジャンプページへのリンクにする
+    t=r'(https?://[\w!\?/\+\-_~=;\.,\*&@#\$%\(\)\'\[\]]+)'
+    message=re.sub(t,r'<a href="'+url_for('jump_page')+r'?url=\1 "> \1 </a>',message)
+
     item={
       "thread_id":thread_id,
+      "post_id":post_id,
       "posted_at":time.time(),
       "user_name":name,
       "message":message
@@ -100,6 +109,13 @@ def random_page():
   rand=random.randrange(number_of_threads)
   return redirect('/{}'.format(rand))
 
+@app.route('/jump', methods=['GET'])
+def jump_page():
+  if request.args.get('url')==None:
+    flash('無効なURLです。')
+    return redirect('/')
+  print(request.args.get('url'))
+  return render_template('jump.html',url=request.args.get('url'))
 
 '''
 @app.errorhandler(404)

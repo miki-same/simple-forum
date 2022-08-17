@@ -11,19 +11,24 @@ dynamodb=boto3.resource(
 
 post_table=dynamodb.Table("Post")
 thread_table=dynamodb.Table("Thread")
+
 #1つの投稿の取得
-def get_post(thread_id,posted_at):
+def get_post(thread_id,post_id):
   response=post_table.get_item(
     Key={
       'thread_id':thread_id,
-      'posted_at':posted_at
+      'post_id':post_id
     }
   )
   return response['Item']
 
 def put_post(item):
+  #floatをDecimalに変換
   item['posted_at']=Decimal(item['posted_at'])
+
   post_table.put_item(Item=item)
+
+  #スレッドの投稿数を更新
   thread_table.update_item(
     Key={
       'id':item['thread_id'],
@@ -33,6 +38,7 @@ def put_post(item):
       ":a": 1
     }
   )
+
   return
 
 #スレッドに属する全投稿の取得
