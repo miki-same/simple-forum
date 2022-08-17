@@ -8,17 +8,20 @@
 {% endfor %}
 
 
-<h3>{{title}}</h3>
-<h5>作成日時: {{created_at}}</h5>
+<h3 class="my-3">{{title}}</h3>
 <ul class="list-group list-group-flush">
   {% for post in thread_posts %}
   <li class="list-group-item">
-    <h5>{{post['user_name']}}</h5>
-    <br>
-    <p style="white-space:pre-wrap;">{{post['message']}}</p>
-  
+    <h6><span>{{post['post_number']}}</span> <span class="font-weight-bold">{{post['user_name']}}</span> <span>{{post['posted_at_jst']}}</span></h6>
+    <p style="white-space:pre-wrap;" class="text-justify">{{post['message']}}</p>
   {% endfor %}
 </ul>
+
+<div class="text-center">
+<a class="btn btn-outline-secondary" href="{{url_for("show_thread", thread_id=thread_id)}}">新着レスの表示</a>
+</div>
+
+<div style="margin-left: 20%; margin-right: 20%;">
 <form action="{{url_for("show_thread",thread_id=thread_id)}}" method="post">
   <div class="form-group">
     名前
@@ -32,5 +35,6 @@
     <input type="submit" value="投稿" class="form-control">
   </div>
 </form>
+</div>
 
 {% endblock %}

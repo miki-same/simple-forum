@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<h3>掲示板へようこそ！</h3>
+<div class="list-group">
   {% for thread in threads %}
-  <a href="{{url_for('show_thread', thread_id=thread['id'])}}">{{thread['title']}}({{thread['number_of_posts']}})</a>
-  <br>
+  <a href="{{url_for('show_thread', thread_id=thread['id'])}}" class="list-group-item list-group-item-action">{{thread['title']}}({{thread['number_of_posts']}})</a>
   {% endfor %}
+</div>
 
 {% endblock %}

@@ -18,6 +18,16 @@ def get_next_id(table_name):
     }
   )
   next_id=response['Item']['next_id']
+
+  return next_id
+
+def get_next_id_and_increment(table_name):
+  response=counter_table.get_item(
+    Key={
+      'table_name':table_name
+    }
+  )
+  next_id=response['Item']['next_id']
   counter_table.update_item(
     Key={
       'table_name':table_name,

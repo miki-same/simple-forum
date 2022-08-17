@@ -8,6 +8,7 @@ from forum_app.models import Counter
 
 import time
 import datetime
+import random
 
 @app.route('/')
 def main():
@@ -24,7 +25,7 @@ def create_new_thread():
     created_at=time.time()
     user_name=request.form['user_name']
     message=request.form['message']
-    id=Counter.get_next_id('Thread')
+    id=Counter.get_next_id_and_increment('Thread')
     
     item_thread={
       'id':id,
@@ -53,11 +54,13 @@ def show_thread(thread_id):
     thread_posts=Post.get_all_posts_in_thread(thread_id)
     title=thread_response['title']
     number_of_posts=int(thread_response['number_of_posts'])
-    created_at=int(thread_response['created_at'])
-    created_at_jst=datetime.datetime.fromtimestamp(created_at, datetime.timezone(datetime.timedelta(hours=9)))
-    for post in thread_posts:
+    created_at=float(thread_response['created_at'])
+    created_at_jst=datetime.datetime.fromtimestamp(created_at, datetime.timezone(datetime.timedelta(hours=9))).strftime('%Y-%m-%d %H:%M:%S')
+    for i, post in enumerate(thread_posts):
+      post['post_number']=i+1
       post['thread_id']=int(post['thread_id'])
-      post['posted_at']=int(post['posted_at'])
+      post['posted_at']=float(post['posted_at'])
+      post['posted_at_jst']=datetime.datetime.fromtimestamp(post['posted_at'],datetime.timezone(datetime.timedelta(hours=9))).strftime('%Y-%m-%d %H:%M:%S')
     return render_template('thread.html',thread_id=thread_id,title=title,number_of_posts=number_of_posts,created_at=created_at_jst, thread_posts=thread_posts)
 
   elif request.method=='POST':
@@ -83,6 +86,12 @@ def delete_thread(thread_id):
 def delete_item(thread_id,item_id):
   #TODO:レスの削除機能を実装 
   return redirect('/')
+
+@app.route('/random', methods=['GET'])
+def random_page():
+  number_of_threads=Counter.get_next_id('Thread')
+  rand=random.randrange(number_of_threads)
+  return redirect('/{}'.format(rand))
 
 
 '''

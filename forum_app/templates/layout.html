@@ -14,9 +14,16 @@
 
 <body>
   <div class="container-fluid px-0">
-    <nav class="navbar bg-dark">
-      <a class="navbar-brand" href="{{url_for('main')}}">読書掲示板</a>
-      <a class="nav-link" href="{{url_for('create_new_thread')}}">新規スレッド</a>
+    <nav class="navbar bg-dark navbar-expand-md">
+      <a class="navbar-brand text-light font-weight-bold" href="{{url_for('main')}}">読書掲示板</a>
+      <ul class="navbar-nav ml-auto list-inline ">
+        <li class="nav-item">
+          <a class="nav-link text-light" href="{{url_for('create_new_thread')}}">新規スレッド</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-light" href="{{url_for('random_page')}}">おまかせ</a>
+        </li>
+      </ul>
     </nav>
   </div>
 
