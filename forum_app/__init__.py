@@ -1,6 +1,12 @@
 
 from flask import Flask, request, redirect, url_for, render_template
+from flask_wtf.csrf import CSRFProtect
+
+#CSRF対策
+csrf=CSRFProtect()
+
 app = Flask(__name__)
+csrf.init_app(app)
 
 config={
   'default':'forum_app.config.DevelopmentConfig'

@@ -20,6 +20,7 @@
 
 <div style="margin-left: 20%; margin-right: 20%;">
   <form action="{{url_for("show_thread",thread_id=thread_id)}}" method="post">
+    <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
     <div class="form-group">
       名前
       <input type="text" name="name" class="form-control" placeholder="名無しさん">
