@@ -1,10 +1,16 @@
 {% extends "layout.html" %}
 {% block body %}
 
+{% for message in get_flashed_messages() %}
+<div class="alert alert-info" role="alert">
+  {{ message }}
+</div>
+{% endfor %}
+
 <h3>新規スレッド作成</h3>
 <form action="{{url_for("create_new_thread")}}" method="post">
   <div class="form-group">
-    タイトル
+    タイトル <span style="color:red; font-size:small">*</span>
     <input type="text" name="title" class="form-control">
   </div>
   <div class="form-group">
@@ -12,7 +18,7 @@
     <input type="text" name="user_name" class="form-control" placeholder="名無しさん">
   </div>
   <div class="form-group">
-    本文
+    本文 <span style="color:red; font-size:small">*</span>
     <textarea name="message" cols="30" rows="5" class="form-control"></textarea>
   </div>
   <div class="form-group">

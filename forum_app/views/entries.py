@@ -7,6 +7,8 @@ from forum_app.models import Thread
 from forum_app.models import Post
 from forum_app.models import Counter
 
+from forum_app.scripts import shape_post
+
 import time
 import datetime
 import random
@@ -29,13 +31,28 @@ def main():
 def create_new_thread():
   if request.method=='GET':
     return render_template('new.html')
+
   elif request.method=='POST':
+    #スレッドを作成
+    id=Counter.get_next_id_and_increment('Thread')
     title=request.form['title']
     created_at=time.time()
+
     user_name=request.form['user_name']
     message=request.form['message']
-    id=Counter.get_next_id_and_increment('Thread')
+
+    #タイトル・本文が未入力の場合新規作成ページにリダイレクトされるようにする
+    errflg=False
+    if not title:
+      flash('タイトルを入力してください')
+      errflg=True
+    if not message:
+      flash('本文を入力してください')
+      errflg=True
     
+    if errflg:
+      return redirect(url_for('create_new_thread'))
+
     item_thread={
       'id':id,
       'title':title,
@@ -43,16 +60,13 @@ def create_new_thread():
       'number_of_posts':0
     }
     Thread.put_thread(item_thread)
-    
-    item_post={
-      'thread_id':id,
-      'post_id':1,
-      'posted_at':created_at,
-      'user_name':user_name,
-      'message':message
-    }
+
+    #最初の投稿を作成
+    item_post=shape_post.shape_post(thread_id=id, user_name=user_name,message=message)
+
     Post.put_post(item_post)
 
+  flash('スレッドが作成されました')
   return redirect('/{}'.format(id))
 
 @app.route('/<int:thread_id>', methods=['GET','POST'])
@@ -73,23 +87,12 @@ def show_thread(thread_id):
     return render_template('thread.html',thread_id=thread_id,title=title,number_of_posts=number_of_posts,created_at=created_at_jst, thread_posts=thread_posts)
 
   elif request.method=='POST':
-    #TODO:スレッドへの投稿機能を作成
-    name=request.form['name']
+    user_name=request.form['name']
     message=request.form['message']
-    post_id=int(Thread.get_thread(id=thread_id)['number_of_posts']+1)
+    #名前がない場合自動で「名無しさん」にする
 
-    #正規表現でURLをハイパーリンクに置き換える
-    #直接リンクではなくジャンプページへのリンクにする
-    t=r'(https?://[\w!\?/\+\-_~=;\.,\*&@#\$%\(\)\'\[\]]+)'
-    message=re.sub(t,r'<a href="'+url_for('jump_page')+r'?url=\1 "> \1 </a>',message)
+    item=shape_post.shape_post(thread_id=thread_id,user_name=user_name,message=message)
 
-    item={
-      "thread_id":thread_id,
-      "post_id":post_id,
-      "posted_at":time.time(),
-      "user_name":name,
-      "message":message
-    }
     Post.put_post(item)
     flash('投稿が完了しました')
     return redirect('/{}'.format(thread_id))
