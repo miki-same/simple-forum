@@ -16,27 +16,28 @@
 <a class="btn btn-outline-secondary" href="{{url_for("show_thread", thread_id=thread_id)}}">新着レスの表示</a>
 </div>
 
-{% if number_of_posts>=200 %}
+{% if can_post %}
+
+<div style="margin-left: 20%; margin-right: 20%;">
+  <form action="{{url_for("show_thread",thread_id=thread_id)}}" method="post">
+    <div class="form-group">
+      名前
+      <input type="text" name="name" class="form-control" placeholder="名無しさん">
+    </div>
+    <div class="form-group">
+      投稿内容
+      <textarea name="message" cols="30" rows="5" class="form-control"></textarea>
+    </div>
+    <div class="form-group">
+      <input type="submit" value="投稿" class="form-control">
+    </div>
+  </form>
+  </div>
+
+{% else %}
 
 <div class="alert alert-danger" role="alert">
   このスレッドは過去ログ倉庫に格納されています
-</div>
-
-{% else %}
-<div style="margin-left: 20%; margin-right: 20%;">
-<form action="{{url_for("show_thread",thread_id=thread_id)}}" method="post">
-  <div class="form-group">
-    名前
-    <input type="text" name="name" class="form-control" placeholder="名無しさん">
-  </div>
-  <div class="form-group">
-    投稿内容
-    <textarea name="message" cols="30" rows="5" class="form-control"></textarea>
-  </div>
-  <div class="form-group">
-    <input type="submit" value="投稿" class="form-control">
-  </div>
-</form>
 </div>
 
 {% endif %}

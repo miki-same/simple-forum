@@ -1,3 +1,4 @@
+from concurrent.futures import thread
 from flask import Flask, request, redirect, url_for, render_template, flash
 from forum_app import app
 from decimal import Decimal
@@ -74,9 +75,14 @@ def show_thread(thread_id):
   if request.method=='GET':
     #スレッドを取得
     thread_response=Thread.get_thread(thread_id)
+    can_post=True
+
+    #現行スレにないとき過去ログを探す
     if thread_response==None:
       thread_response=Thread_log.get_thread(thread_id)
-    
+      #過去ログにある時Falseになるフラッグ
+      can_post=False
+
     if thread_response==None:
       flash('存在しないスレッドです')
       return redirect(url_for('main'))
@@ -92,16 +98,20 @@ def show_thread(thread_id):
       post['thread_id']=int(post['thread_id'])
       post['posted_at']=float(post['posted_at'])
       post['posted_at_jst']=datetime.datetime.fromtimestamp(post['posted_at'],datetime.timezone(datetime.timedelta(hours=9))).strftime('%Y-%m-%d %H:%M:%S')
-    return render_template('thread.html',thread_id=thread_id,title=title,number_of_posts=number_of_posts,created_at=created_at_jst, thread_posts=thread_posts)
+    return render_template('thread.html',thread_id=thread_id,title=title,number_of_posts=number_of_posts,created_at=created_at_jst, thread_posts=thread_posts, can_post=can_post)
 
   elif request.method=='POST':
     thread_response=Thread.get_thread(thread_id)
 
+    #現行スレではなくなっている場合、または現行スレで投稿上限に達している場合
+    if thread_response==None or (thread_response and thread_response['number_of_posts']>=app.config.get('MAX_THREAD_SIZE')):
+      flash('投稿上限に到達しました')
+      if thread_response!=None:
+        move_thread.move_thread(thread_id=thread_id)
+
+      return redirect(url_for('show_thread',thread_id=thread_id))
 
     post_id=thread_response['number_of_posts']+1
-    if post_id>200:
-      flash('投稿上限に到達しました')
-      return redirect(url_for('show_thread',thread_id=thread_id))
 
     user_name=request.form['name']
     message=request.form['message']
@@ -114,9 +124,10 @@ def show_thread(thread_id):
 
     Post.put_post(item)
     flash('投稿が完了しました')
-    
-    if post_id==200:
-      move_thread.remove_thread(thread_id=thread_id)
+
+    #過去ログに移動
+    if post_id>=app.config.get('MAX_THREAD_SIZE'):
+      move_thread.move_thread(thread_id=thread_id)
 
     return redirect('/{}'.format(thread_id))
 
@@ -129,11 +140,18 @@ def delete_thread(thread_id):
 def show_post(thread_id,post_id):
   post_response=Post.get_post(thread_id,post_id)
   thread_response=Thread.get_thread(thread_id)
-  print(post_response)
+  can_post=True
+
+  #過去ログの場合
+  if thread_response==None:
+    thread_response=Thread_log.get_thread(thread_id)
+    can_post=False
+
   if post_response!=None:
     post=post_response
     title=thread_response['title']
     number_of_posts=int(thread_response['number_of_posts'])
+    
     created_at=float(thread_response['created_at'])
     created_at_jst=datetime.datetime.fromtimestamp(created_at, datetime.timezone(datetime.timedelta(hours=9))).strftime('%Y-%m-%d %H:%M:%S')
 
@@ -141,7 +159,8 @@ def show_post(thread_id,post_id):
     post['posted_at']=float(post['posted_at'])
     post['posted_at_jst']=datetime.datetime.fromtimestamp(post['posted_at'],datetime.timezone(datetime.timedelta(hours=9))).strftime('%Y-%m-%d %H:%M:%S')
 
-    return render_template('thread.html',thread_id=thread_id,title=title,number_of_posts=number_of_posts,created_at=created_at_jst, thread_posts=[post])
+    return render_template('thread.html',thread_id=thread_id,title=title,number_of_posts=number_of_posts,created_at=created_at_jst, thread_posts=[post], can_post=can_post)
+  
   else:
     flash('存在しないレス番号です')
     return redirect(url_for('show_thread',thread_id=thread_id))

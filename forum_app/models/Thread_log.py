@@ -1,12 +1,14 @@
 import boto3
 from decimal import Decimal
+from forum_app import app
 
 dynamodb=boto3.resource(
   'dynamodb',
-  endpoint_url='http://localhost:8000',
-  aws_access_key_id='',
-  aws_secret_access_key='',
-  region_name='')
+  endpoint_url=app.config.get('DYNAMODB_ENDPOINT_URL'),
+  aws_access_key_id=app.config.get('AWS_ACCESS_KEY'),
+  aws_secret_access_key=app.config.get('AWS_SECRET_ACCESS_KEY'),
+  region_name=app.config.get('DYNAMODB_REGION')
+  )
 
 thread_log_table=dynamodb.Table("Thread_log")
 
