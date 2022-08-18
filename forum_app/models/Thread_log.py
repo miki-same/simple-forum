@@ -8,11 +8,10 @@ dynamodb=boto3.resource(
   aws_secret_access_key='',
   region_name='')
 
-thread_table=dynamodb.Table("Thread")
+thread_log_table=dynamodb.Table("Thread_log")
 
-#スレッドが存在する場合Itemを返す 存在しない場合Noneを返す
 def get_thread(id):
-  response=thread_table.get_item(
+  response=thread_log_table.get_item(
     Key={
       'id':id
     }
@@ -21,18 +20,17 @@ def get_thread(id):
 
 def put_thread(item):
   item['created_at']=Decimal(item['created_at'])
-  thread_table.put_item(Item=item)
+  thread_log_table.put_item(Item=item)
   return
 
 def delete_thread(id):
-  thread_table.delete_item(
+  thread_log_table.delete_item(
     Key={
       'id':id
     }
   )
 
-
 def get_all_threads():
-  response=thread_table.scan()
+  response=thread_log_table.scan()
 
   return response.get('Items')

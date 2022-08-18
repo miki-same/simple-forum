@@ -1,13 +1,13 @@
-from turtle import pos
 from flask import Flask, request, redirect, url_for, render_template, flash
 from forum_app import app
 from decimal import Decimal
 
-from forum_app.models import Thread
+from forum_app.models import Thread, Thread_log
 from forum_app.models import Post
 from forum_app.models import Counter
 
 from forum_app.scripts import shape_post
+from forum_app.scripts import move_thread
 
 import time
 import datetime
@@ -62,7 +62,7 @@ def create_new_thread():
     Thread.put_thread(item_thread)
 
     #最初の投稿を作成
-    item_post=shape_post.shape_post(thread_id=id, user_name=user_name,message=message)
+    item_post=shape_post.shape_post(thread_id=id, user_name=user_name,message=message,post_id=1)
 
     Post.put_post(item_post)
 
@@ -74,12 +74,20 @@ def show_thread(thread_id):
   if request.method=='GET':
     #スレッドを取得
     thread_response=Thread.get_thread(thread_id)
+    if thread_response==None:
+      thread_response=Thread_log.get_thread(thread_id)
+    
+    if thread_response==None:
+      flash('存在しないスレッドです')
+      return redirect(url_for('main'))
+
     #スレッド内の投稿を取得
     thread_posts=Post.get_all_posts_in_thread(thread_id)
     title=thread_response['title']
     number_of_posts=int(thread_response['number_of_posts'])
     created_at=float(thread_response['created_at'])
     created_at_jst=datetime.datetime.fromtimestamp(created_at, datetime.timezone(datetime.timedelta(hours=9))).strftime('%Y-%m-%d %H:%M:%S')
+
     for post in thread_posts:
       post['thread_id']=int(post['thread_id'])
       post['posted_at']=float(post['posted_at'])
@@ -87,6 +95,14 @@ def show_thread(thread_id):
     return render_template('thread.html',thread_id=thread_id,title=title,number_of_posts=number_of_posts,created_at=created_at_jst, thread_posts=thread_posts)
 
   elif request.method=='POST':
+    thread_response=Thread.get_thread(thread_id)
+
+
+    post_id=thread_response['number_of_posts']
+    if post_id>200:
+      flash('投稿上限に到達しました')
+      return redirect('show_thread',thread_id=thread_id)
+
     user_name=request.form['name']
     message=request.form['message']
 
@@ -94,10 +110,14 @@ def show_thread(thread_id):
       flash('本文を入力してください')
       return redirect(url_for('show_thread',thread_id=thread_id))
 
-    item=shape_post.shape_post(thread_id=thread_id,user_name=user_name,message=message)
+    item=shape_post.shape_post(thread_id=thread_id,user_name=user_name,message=message,post_id=post_id)
 
     Post.put_post(item)
     flash('投稿が完了しました')
+    
+    if post_id==200:
+      move_thread.remove_thread(thread_id=thread_id)
+
     return redirect('/{}'.format(thread_id))
 
 @app.route('/<int:thread_id>/delete', methods=['POST'])
