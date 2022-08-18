@@ -11,6 +11,7 @@ from forum_app.models import Counter
 from forum_app.scripts import shape_post
 from forum_app.scripts import move_thread
 from forum_app.scripts import random_id
+from forum_app.scripts import next_day
 
 import time
 import datetime
@@ -72,8 +73,7 @@ def show_thread(thread_id):
     else:
       #Cookieに情報がない場合の設定
       user_info = {'id':random_id.random_id()}
-      max_age = 30 #30秒
-      expires = int(datetime.datetime.now().timestamp()) + max_age
+      expires = next_day.next_day()
       response.set_cookie("user_info", value=json.dumps(user_info), expires=expires)
 
     if not message:
