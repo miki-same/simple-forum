@@ -10,8 +10,13 @@ def shape_post(item):
     item['user_name']='名無しさん'
   item['posted_at']=Decimal(time.time())
 
+  #urlにハイパーリンクタグをつける
+  #urlizeで代用しているためコメントアウト
+  #t=r'(https?://[\w!\?/\+\-_~=;\.,\*&@#\$%\(\)\'\[\]]+)'
+  #item['message']=re.sub(t,r'<a href="'+url_for('jump_page')+r'?url=\1 " target="_blank" rel="noopener noreferrer">\1</a>',item['message'])  
+
   t=r'(https?://[\w!\?/\+\-_~=;\.,\*&@#\$%\(\)\'\[\]]+)'
-  item['message']=re.sub(t,r'<a href="'+url_for('jump_page')+r'?url=\1 " target="_blank" rel="noopener noreferrer">\1</a>',item['message'])  
+  item['message']=re.sub(t,r' \1',item['message'])  
 
   return item
 
