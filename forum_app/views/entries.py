@@ -98,10 +98,10 @@ def show_thread(thread_id):
     thread_response=Thread.get_thread(thread_id)
 
 
-    post_id=thread_response['number_of_posts']
+    post_id=thread_response['number_of_posts']+1
     if post_id>200:
       flash('投稿上限に到達しました')
-      return redirect('show_thread',thread_id=thread_id)
+      return redirect(url_for('show_thread',thread_id=thread_id))
 
     user_name=request.form['name']
     message=request.form['message']
