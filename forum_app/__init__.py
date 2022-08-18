@@ -1,6 +1,7 @@
 
 from flask import Flask, request, redirect, url_for, render_template
 from flask_wtf.csrf import CSRFProtect
+import os
 
 #CSRF対策
 csrf=CSRFProtect()
@@ -9,9 +10,11 @@ app = Flask(__name__)
 csrf.init_app(app)
 
 config={
-  'default':'forum_app.config.DevelopmentConfig'
+  'default':'forum_app.config.DevelopmentConfig',
+  'development':'forum_app.config.DevelopmentConfig',
+  'production':'forum_app.fonfig.ProductionConfig'
 }
-config_name='default'
+config_name=os.getenv('SIMPLE_FORUM_CONFIG', 'default')
 app.config.from_object(config[config_name])
 
 #from forum_app.views import entries
