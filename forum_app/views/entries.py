@@ -89,7 +89,10 @@ def show_thread(thread_id):
   elif request.method=='POST':
     user_name=request.form['name']
     message=request.form['message']
-    #名前がない場合自動で「名無しさん」にする
+
+    if not message:
+      flash('本文を入力してください')
+      return redirect(url_for('show_thread',thread_id=thread_id))
 
     item=shape_post.shape_post(thread_id=thread_id,user_name=user_name,message=message)
 
