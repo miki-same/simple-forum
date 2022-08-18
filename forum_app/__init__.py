@@ -12,10 +12,12 @@ csrf.init_app(app)
 config={
   'default':'forum_app.config.DevelopmentConfig',
   'development':'forum_app.config.DevelopmentConfig',
-  'production':'forum_app.fonfig.ProductionConfig'
+  'production':'forum_app.config.ProductionConfig',
+  'database_test':'forum_app.config.DatabaseTestConfig'
 }
 config_name=os.getenv('SIMPLE_FORUM_CONFIG', 'default')
-app.config.from_object(config[config_name])
+#app.config.from_object(config[config_name])
+app.config.from_object(config['database_test'])
 
 #from forum_app.views import entries
 from forum_app.views import index

@@ -10,7 +10,7 @@ dynamodb=boto3.resource(
   region_name=app.config.get('DYNAMODB_REGION')
   )
 
-thread_log_table=dynamodb.Table("Thread_log")
+thread_log_table=dynamodb.Table(app.config.get('DB_THREAD_LOG'))
 
 def get_thread(id):
   response=thread_log_table.get_item(

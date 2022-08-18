@@ -10,7 +10,7 @@ dynamodb=boto3.resource(
   region_name=app.config.get('DYNAMODB_REGION')
   )
 
-thread_table=dynamodb.Table("Thread")
+thread_table=dynamodb.Table(app.config.get('DB_THREAD'))
 
 #スレッドが存在する場合Itemを返す 存在しない場合Noneを返す
 def get_thread(id):

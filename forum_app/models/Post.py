@@ -11,8 +11,8 @@ dynamodb=boto3.resource(
   region_name=app.config.get('DYNAMODB_REGION')
   )
 
-post_table=dynamodb.Table("Post")
-thread_table=dynamodb.Table("Thread")
+post_table=dynamodb.Table(app.config.get('DB_POST'))
+thread_table=dynamodb.Table(app.config.get('DB_THREAD'))
 
 #1つの投稿の取得
 def get_post(thread_id,post_id):

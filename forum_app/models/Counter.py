@@ -10,7 +10,7 @@ dynamodb=boto3.resource(
   aws_secret_access_key=app.config.get('AWS_SECRET_ACCESS_KEY'),
   region_name=app.config.get('DYNAMODB_REGION')
   )
-counter_table=dynamodb.Table("Counter")
+counter_table=dynamodb.Table(app.config.get('DB_COUNTER'))
 
 def get_next_id(table_name):
   response=counter_table.get_item(
