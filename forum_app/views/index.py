@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for, render_template, flash
+from flask import Flask, request, redirect, url_for, render_template, flash, make_response
 from forum_app import app
 from decimal import Decimal
 
@@ -8,11 +8,13 @@ from forum_app.models import Counter
 
 from forum_app.scripts import shape_post
 from forum_app.scripts import move_thread
+from forum_app.scripts import random_id
 
 import time
 import datetime
 import random
 import re
+import json
 
 @app.route('/')
 def main():
@@ -61,10 +63,33 @@ def create_new_thread():
     }
     Thread.put_thread(item_thread)
 
+    response=make_response(redirect('/{}'.format(id)))
+
+    #CookieからIDを読み込み
+    user_info=request.cookies.get('user_info')
+    if user_info != None:
+      user_info = json.loads(user_info)
+    else:
+      #Cookieに情報がない場合の設定
+      user_info = {'id':random_id.random_id()}
+      max_age = 30 #30秒
+      expires = int(datetime.datetime.now().timestamp()) + max_age
+      response.set_cookie("user_info", value=json.dumps(user_info), expires=expires)
+
+
+    item={
+      'thread_id':id,
+      'user_name':user_name,
+      'message':message,
+      'post_id':1,
+      'user_id':user_info['id']
+    }
+    item_post=shape_post.shape_post(item)
+
     #最初の投稿を作成
-    item_post=shape_post.shape_post(thread_id=id, user_name=user_name,message=message,post_id=1)
+    #item_post=shape_post.shape_post(thread_id=id, user_name=user_name,message=message,post_id=1, user_id=user_info['id'])
 
     Post.put_post(item_post)
 
-  flash('スレッドが作成されました')
-  return redirect('/{}'.format(id))
+    flash('スレッドが作成されました')
+    return response

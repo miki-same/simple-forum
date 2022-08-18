@@ -7,7 +7,7 @@
 <ul class="list-group list-group-flush">
   {% for post in thread_posts %}
   <li class="list-group-item">
-    <h6><span>{{post['post_id']}}</span> <span class="font-weight-bold">{{post['user_name']}}</span> <span>{{post['posted_at_jst']}}</span></h6>
+    <h6><span>{{post['post_id']}}</span> <span class="font-weight-bold">{{post['user_name']}}</span> {{post['posted_at_jst']}}&emsp;ID:{{post['user_id']}}</h6>
     <p style="white-space:pre-wrap;" class="text-justify">{{post['message']|safe}}</p>
   {% endfor %}
 </ul>

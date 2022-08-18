@@ -5,6 +5,17 @@ import time
 import re
 from decimal import Decimal
 
+def shape_post(item):
+  if not item['user_name']:
+    item['user_name']='名無しさん'
+  item['posted_at']=Decimal(time.time())
+
+  t=r'(https?://[\w!\?/\+\-_~=;\.,\*&@#\$%\(\)\'\[\]]+)'
+  item['message']=re.sub(t,r'<a href="'+url_for('jump_page')+r'?url=\1 " target="_blank" rel="noopener noreferrer">\1</a>',item['message'])  
+
+  return item
+
+'''
 #入力された内容とスレッドIDからDBに投げるデータを作成
 def shape_post(thread_id, user_name, message, post_id):
   if not user_name:
@@ -25,3 +36,4 @@ def shape_post(thread_id, user_name, message, post_id):
   }
 
   return item
+'''

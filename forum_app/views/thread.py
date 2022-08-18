@@ -1,4 +1,6 @@
-from flask import Flask, request, redirect, url_for, render_template, flash
+from turtle import shape
+from urllib import response
+from flask import Flask, request, redirect, url_for, render_template, flash, make_response
 from forum_app import app
 from decimal import Decimal
 
@@ -8,11 +10,13 @@ from forum_app.models import Counter
 
 from forum_app.scripts import shape_post
 from forum_app.scripts import move_thread
+from forum_app.scripts import random_id
 
 import time
 import datetime
 import random
 import re
+import json
 
 @app.route('/<int:thread_id>', methods=['GET','POST'])
 def show_thread(thread_id):
@@ -56,24 +60,44 @@ def show_thread(thread_id):
       return redirect(url_for('show_thread',thread_id=thread_id))
 
     post_id=thread_response['number_of_posts']+1
-
     user_name=request.form['name']
     message=request.form['message']
+
+    response=make_response(redirect('/{}'.format(thread_id)))
+
+    #CookieからIDを読み込み
+    user_info=request.cookies.get('user_info')
+    if user_info != None:
+      user_info = json.loads(user_info)
+    else:
+      #Cookieに情報がない場合の設定
+      user_info = {'id':random_id.random_id()}
+      max_age = 30 #30秒
+      expires = int(datetime.datetime.now().timestamp()) + max_age
+      response.set_cookie("user_info", value=json.dumps(user_info), expires=expires)
 
     if not message:
       flash('本文を入力してください')
       return redirect(url_for('show_thread',thread_id=thread_id))
 
-    item=shape_post.shape_post(thread_id=thread_id,user_name=user_name,message=message,post_id=post_id)
+    item={
+      'thread_id':thread_id,
+      'user_name':user_name,
+      'message':message,
+      'post_id':post_id,
+      'user_id':user_info['id']
+    }
+    item=shape_post.shape_post(item)
+    #item=shape_post.shape_post(thread_id=thread_id,user_name=user_name,message=message,post_id=post_id, user_id=user_info['id'])
 
     Post.put_post(item)
-    flash('投稿が完了しました')
+    flash('投稿が完了しました')    
 
     #過去ログに移動
     if post_id>=app.config.get('MAX_THREAD_SIZE'):
       move_thread.move_thread(thread_id=thread_id)
-
-    return redirect('/{}'.format(thread_id))
+    print(user_info)
+    return response
 
 @app.route('/<int:thread_id>/delete', methods=['POST'])
 def delete_thread(thread_id):
