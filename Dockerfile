@@ -4,6 +4,7 @@ RUN apt-get update
 RUN apt-get -y install locales && \
     localedef -f UTF-8 -i ja_JP ja_JP.UTF-8
 RUN apt-get install build-essential python -y
+RUN apt-get install nginx -y
 
 ENV LANG ja_JP.UTF-8
 ENV LANGUAGE ja_JP:ja
