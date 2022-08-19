@@ -1,5 +1,3 @@
-from turtle import shape
-from urllib import response
 from flask import Flask, request, redirect, url_for, render_template, flash, make_response
 from forum_app import app
 from decimal import Decimal
