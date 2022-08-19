@@ -13,9 +13,10 @@ ENV TZ JST-9
 ENV TERM xterm
 
 WORKDIR /app
-COPY requirements.txt /app
+COPY . /app
 
 RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
 RUN pip install -r requirements.txt
 
+CMD ["sh","run.sh"]
