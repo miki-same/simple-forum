@@ -17,7 +17,7 @@ config={
 }
 config_name=os.getenv('SIMPLE_FORUM_CONFIG', 'default')
 #app.config.from_object(config[config_name])
-app.config.from_object(config['database_test'])
+app.config.from_object(config['default'])
 
 #from forum_app.views import entries
 from forum_app.views import index
