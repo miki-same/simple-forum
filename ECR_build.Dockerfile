@@ -1,3 +1,5 @@
+#Dockerイメージ作成用のDockerfile
+
 FROM python:3.8-slim
 
 RUN apt-get update
@@ -14,6 +16,10 @@ ENV TERM xterm
 
 WORKDIR /app
 COPY . /app
+
+RUN cp nginx/uwsgi.conf /etc/nginx/conf.d/
+RUN rm ../etc/nginx/sites-enabled/default
+RUN mkdir ../var/log/uwsgi
 
 RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
