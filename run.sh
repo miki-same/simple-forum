@@ -1,2 +1,2 @@
-uwsgi myapp.ini
 nginx
+uwsgi myapp.ini

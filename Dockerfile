@@ -13,7 +13,11 @@ ENV TZ JST-9
 ENV TERM xterm
 
 WORKDIR /app
-COPY requirements.txt /app
+COPY . /app
+
+RUN cp nginx/uwsgi.conf /etc/nginx/conf.d/
+RUN rm ../etc/nginx/sites-enabled/default
+RUN mkdir ../var/log/uwsgi
 
 RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
