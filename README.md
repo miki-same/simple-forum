@@ -7,6 +7,5 @@ https://simple0ch-bbs.com
 - Flask
 - nginx
 - Docker
-### 実行環境
 - AWS ECS
 - AWS DynamoDB
