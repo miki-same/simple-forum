@@ -29,5 +29,6 @@ RUN mkdir ../var/log/uwsgi
 RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
 RUN pip install -r requirements.txt
+RUN chmod +x run.sh
 
 CMD ["sh","run.sh"]

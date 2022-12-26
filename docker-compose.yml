@@ -8,3 +8,5 @@ services:
     ports:
      - 5000:5000
      - 8080:80
+    extra_hosts:
+     - localhost:192.168.96.1
