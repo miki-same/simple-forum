@@ -1,2 +1,4 @@
 /DynamoDB_docker
 Pipfile.lock
+Dockerfile
+ECR_build.Dockerfile
